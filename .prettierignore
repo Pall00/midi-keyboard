@@ -1,0 +1,14 @@
+# Build artifacts
+dist
+build
+coverage
+
+# Package managers
+node_modules
+package-lock.json
+yarn.lock
+
+# Misc
+.cache
+.vscode
+.DS_Store

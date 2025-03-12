@@ -1,0 +1,10 @@
+# Build artifacts
+dist
+build
+coverage
+
+# Package managers
+node_modules
+
+# Misc
+.cache
