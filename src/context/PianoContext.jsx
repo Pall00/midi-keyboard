@@ -158,14 +158,14 @@ export const PianoProvider = ({ children, initialSettings = {}, customTheme = nu
     setSustain: audioEngine.setSustain,
     changeVolume: audioEngine.changeVolume,
     changeReverb: audioEngine.changeReverb,
-    
+
     // MIDI methods (updated property names to match new hook)
     connectMidiDevice: midiConnection.connectToDevice,
     disconnectMidiDevice: midiConnection.disconnect,
     refreshMidiDevices: midiConnection.refreshDevices,
     retryMidiConnection: midiConnection.retryConnection,
     clearMidiDebug: midiConnection.clearDebugInfo,
-    
+
     updateSetting,
     updateSettings,
   };

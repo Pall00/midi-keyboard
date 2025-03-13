@@ -21,7 +21,8 @@ export const DeviceSelect = styled.select`
   color: #fff;
   border: 1px solid #555;
   border-radius: 4px;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
   font-size: 0.875rem;
   cursor: pointer;
@@ -61,9 +62,9 @@ export const OtherDevicesGroup = styled.optgroup`
  */
 export const DeviceOption = styled.option`
   padding: 0.5rem;
-  background-color: ${props => props.$isConnected ? '#2a4080' : '#444'};
-  color: ${props => props.$isConnected ? '#fff' : '#ddd'};
-  font-weight: ${props => props.$isConnected ? 600 : 400};
+  background-color: ${props => (props.$isConnected ? '#2a4080' : '#444')};
+  color: ${props => (props.$isConnected ? '#fff' : '#ddd')};
+  font-weight: ${props => (props.$isConnected ? 600 : 400)};
 `;
 
 /**
@@ -88,7 +89,8 @@ const BaseButton = styled.button`
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 
   &:disabled {
@@ -146,7 +148,8 @@ export const NoDevicesMessage = styled.div`
   color: #bbb;
   font-size: 0.875rem;
   text-align: center;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 

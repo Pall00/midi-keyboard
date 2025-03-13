@@ -9,6 +9,7 @@ export const KeyboardContainer = styled.div`
   display: flex;
   position: relative;
   justify-content: center;
+  align-items: center;
   background-color: #222;
   padding: 10px 0 0;
   width: 100%;
@@ -38,7 +39,8 @@ export const KeyboardContainer = styled.div`
  */
 export const KeyboardWrapper = styled.div`
   position: relative;
-  display: inline-flex;
+  display: flex;
+  margin: 0 auto;
   min-width: min-content;
   /* Adding some padding at the bottom to ensure there's space for labels */
   padding-bottom: 16px;

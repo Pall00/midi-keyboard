@@ -169,7 +169,7 @@ export const AdvancedControlsToggle = styled.button`
   cursor: pointer;
   text-decoration: underline;
   margin-left: auto;
-  
+
   &:hover {
     color: #bbb;
   }

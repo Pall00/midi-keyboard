@@ -23,8 +23,8 @@ const useAudioEngine = ({
   const [volume, setVolume] = useState(initialVolume);
   const [reverb, setReverb] = useState(initialReverb);
   const [isSustainActive, setIsSustainActive] = useState(false);
-  //const [release, setRelease] = useState(initialRelease); 
-  const [instrument] = useState(initialInstrument); 
+  //const [release, setRelease] = useState(initialRelease);
+  const [instrument] = useState(initialInstrument);
 
   // Refs for Tone.js objects
   const synthRef = useRef(null);

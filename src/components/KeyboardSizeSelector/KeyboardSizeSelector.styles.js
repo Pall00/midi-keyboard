@@ -17,7 +17,8 @@ export const SelectorContainer = styled.div`
 export const SelectorLabel = styled.label`
   color: #ddd;
   font-size: 0.875rem;
-  font-family: ${props => props.theme.typography?.fontFamily ||
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -34,7 +35,8 @@ export const SizeSelect = styled.select`
   cursor: pointer;
   width: ${props => (props.$fullWidth ? '100%' : 'auto')};
   min-width: 150px;
-  font-family: ${props => props.theme.typography?.fontFamily ||
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 
   &:focus {
@@ -69,7 +71,8 @@ export const SizeButton = styled.button`
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: ${props => props.theme.typography?.fontFamily ||
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 
   &:hover {
@@ -89,6 +92,7 @@ export const LayoutInfo = styled.div`
   font-size: 0.75rem;
   color: #aaa;
   margin-top: ${props => (props.$vertical ? '0.25rem' : '0')};
-  font-family: ${props => props.theme.typography?.fontFamily ||
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;

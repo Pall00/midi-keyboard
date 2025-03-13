@@ -1,8 +1,10 @@
 // src/hooks/usePianoNotes.js
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+
+import { createPianoKeys } from '../utils/pianoUtils';
 
 /**
- * Hook for managing piano notes state
+ * Custom hook for managing piano notes state
  *
  * Handles active notes, highlighted notes, and provides
  * methods to control notes from different input sources.
@@ -10,7 +12,10 @@ import { useState, useCallback } from 'react';
  * @param {Object} options - Configuration options
  * @returns {Object} State and methods for piano notes
  */
-const usePianoNotes = ({ initialActiveNotes = [], initialHighlightedNotes = [] } = {}) => {
+const usePianoNotes = (
+  keyRange = { startNote: 'C4', endNote: 'B5' },
+  { initialActiveNotes = [], initialHighlightedNotes = [] } = {}
+) => {
   // State for currently active notes (keys being pressed)
   const [activeNotes, setActiveNotes] = useState(initialActiveNotes);
 
@@ -150,49 +155,38 @@ const usePianoNotes = ({ initialActiveNotes = [], initialHighlightedNotes = [] }
     setHighlightedNotes([]);
   }, []);
 
-  /**
-   * Check if a note is currently active
-   * @param {string} note - The note to check
-   * @returns {boolean} Whether the note is active
-   */
-  const isNoteActive = useCallback(
-    note => {
-      return activeNotes.includes(note);
-    },
-    [activeNotes]
-  );
+  // Get start and end notes with fallbacks for keyboard generation
+  const startNote = keyRange?.startNote || 'C4';
+  const endNote = keyRange?.endNote || 'B5';
 
-  /**
-   * Check if a note is currently highlighted
-   * @param {string} note - The note to check
-   * @returns {boolean} Whether the note is highlighted
-   */
-  const isNoteHighlighted = useCallback(
-    note => {
-      return highlightedNotes.includes(note);
-    },
-    [highlightedNotes]
-  );
+  // Generate all piano keys based on key range
+  const allKeys = useMemo(() => createPianoKeys({ startNote, endNote }), [startNote, endNote]);
+
+  // Separate into white and black keys for rendering
+  const whiteKeys = useMemo(() => allKeys.filter(key => !key.isBlack), [allKeys]);
+  const blackKeys = useMemo(() => allKeys.filter(key => key.isBlack), [allKeys]);
 
   return {
-    // State
+    // State for Piano.jsx compatibility
     activeNotes,
     highlightedNotes,
     notesBySource,
 
-    // Methods for active notes
+    // Methods for Piano.jsx compatibility
     activateNote,
     deactivateNote,
     clearSource,
     clearAllNotes,
-    isNoteActive,
-
-    // Methods for highlighted notes
     highlightNote,
     unhighlightNote,
     setHighlights,
     clearHighlights,
-    isNoteHighlighted,
+
+    // Additional properties for new Keyboard.jsx
+    allKeys,
+    whiteKeys,
+    blackKeys,
+    totalWhiteKeys: whiteKeys.length,
   };
 };
 

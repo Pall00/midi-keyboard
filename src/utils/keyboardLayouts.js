@@ -74,7 +74,7 @@ export const defaultLayoutId = 'keys37';
  * @param {string} layoutId - The layout ID to retrieve
  * @returns {Object} The layout configuration, or the default layout if not found
  */
-export const getKeyboardLayout = (layoutId) => {
+export const getKeyboardLayout = layoutId => {
   return keyboardLayouts[layoutId] || keyboardLayouts[defaultLayoutId];
 };
 
@@ -91,13 +91,13 @@ export const getKeyboardLayoutsArray = () => {
  * @param {Object} keyRange - The key range object with startNote and endNote
  * @returns {string|null} Layout ID if a match is found, null otherwise
  */
-export const keyRangeToLayoutId = (keyRange) => {
+export const keyRangeToLayoutId = keyRange => {
   if (!keyRange || !keyRange.startNote || !keyRange.endNote) return null;
-  
+
   const match = Object.values(keyboardLayouts).find(
     layout => layout.startNote === keyRange.startNote && layout.endNote === keyRange.endNote
   );
-  
+
   return match ? match.id : null;
 };
 

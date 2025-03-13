@@ -15,7 +15,7 @@ import {
 
 /**
  * Keyboard Size Selector Component
- * 
+ *
  * Allows users to select from predefined keyboard layouts
  * with different key ranges and sizes.
  */
@@ -30,31 +30,37 @@ const KeyboardSizeSelector = ({
 }) => {
   // Get all available layouts
   const layouts = getKeyboardLayoutsArray();
-  
+
   // Get the current layout object based on the selected ID
   const currentLayout = getKeyboardLayout(selectedLayout);
 
   // Handle layout selection change
-  const handleChange = useCallback(event => {
-    const layoutId = event.target.value;
-    if (onChange) {
-      onChange(layoutId);
-    }
-  }, [onChange]);
+  const handleChange = useCallback(
+    event => {
+      const layoutId = event.target.value;
+      if (onChange) {
+        onChange(layoutId);
+      }
+    },
+    [onChange]
+  );
 
   // Handle button click for button mode
-  const handleButtonClick = useCallback(layoutId => {
-    if (onChange && !disabled) {
-      onChange(layoutId);
-    }
-  }, [onChange, disabled]);
+  const handleButtonClick = useCallback(
+    layoutId => {
+      if (onChange && !disabled) {
+        onChange(layoutId);
+      }
+    },
+    [onChange, disabled]
+  );
 
   // Format for display as dropdown
   if (displayMode === 'dropdown') {
     return (
       <SelectorContainer $vertical={vertical} className={className}>
         <SelectorLabel htmlFor="keyboard-size-select">Keyboard Size</SelectorLabel>
-        
+
         <div>
           <SizeSelect
             id="keyboard-size-select"
@@ -68,7 +74,7 @@ const KeyboardSizeSelector = ({
               </option>
             ))}
           </SizeSelect>
-          
+
           {showInfo && (
             <LayoutInfo $vertical={vertical}>
               {currentLayout.keyCount} keys | {currentLayout.startNote} to {currentLayout.endNote}
@@ -83,7 +89,7 @@ const KeyboardSizeSelector = ({
   return (
     <SelectorContainer $vertical className={className}>
       <SelectorLabel>Keyboard Size</SelectorLabel>
-      
+
       <div>
         <ButtonsContainer>
           {layouts.map(layout => (
@@ -98,7 +104,7 @@ const KeyboardSizeSelector = ({
             </SizeButton>
           ))}
         </ButtonsContainer>
-        
+
         {showInfo && (
           <LayoutInfo>
             {currentLayout.name} | {currentLayout.startNote} to {currentLayout.endNote}

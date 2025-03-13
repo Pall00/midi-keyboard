@@ -1,11 +1,10 @@
 // src/components/Key/Key.styles.js
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
 /**
- * Main container for piano key
+ * Main container for piano key with direct color application
  */
-export const KeyContainer = styled(motion.div)`
+export const KeyContainer = styled.div`
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -18,7 +17,17 @@ export const KeyContainer = styled(motion.div)`
     ${props => props.theme.dimensions.borderRadius}px;
   touch-action: none; /* Prevent browser handling of touch events */
 
-  /* Dynamic styling based on key type (white or black) */
+  /* Use direct color prop if provided (for debugging) */
+  background-color: ${props =>
+    props.$keyColor || // Use direct color prop if provided
+    (props.$isActive
+      ? props.$isBlack
+        ? props.theme.colors.activeBlackKey
+        : props.theme.colors.activeWhiteKey
+      : props.$isBlack
+        ? props.theme.colors.blackKey
+        : props.theme.colors.whiteKey)};
+
   height: ${props =>
     props.$isBlack
       ? props.theme.dimensions.blackKeyHeight
@@ -26,6 +35,36 @@ export const KeyContainer = styled(motion.div)`
   z-index: ${props => (props.$isBlack ? 2 : 1)};
   border: 1px solid
     ${props => (props.$isBlack ? props.theme.colors.blackKeyBorder : props.theme.colors.keyBorder)};
+
+  /* Add box-shadow */
+  box-shadow: ${props =>
+    props.$isActive
+      ? `0 1px 2px ${props.theme.colors.keyShadow}`
+      : props.$isBlack
+        ? `0 2px 3px ${props.theme.colors.keyShadow}`
+        : `0 2px 5px ${props.theme.colors.keyShadow}`};
+
+  /* Add transition for smooth changes */
+  transition:
+    background-color 0.1s ease,
+    box-shadow 0.1s ease,
+    transform 0.1s ease;
+
+  /* Add transform for active state */
+  transform: translateY(${props => (props.$isActive ? '2px' : '0')});
+`;
+
+/**
+ * Inner content container to help with positioning
+ */
+export const InnerKeyContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
 `;
 
 /**

@@ -54,18 +54,46 @@ export const defaultTheme = {
 };
 
 /**
- * Creates a custom theme by merging user options with the default theme
+ * Creates a custom theme by deeply merging user options with the default theme
  * @param {Object} options - Custom theme options
  * @returns {Object} - Merged theme
  */
 export const createTheme = (options = {}) => {
-  return {
-    colors: { ...defaultTheme.colors, ...(options.colors || {}) },
-    dimensions: { ...defaultTheme.dimensions, ...(options.dimensions || {}) },
-    typography: { ...defaultTheme.typography, ...(options.typography || {}) },
-    animation: { ...defaultTheme.animation, ...(options.animation || {}) },
-    breakpoints: { ...defaultTheme.breakpoints, ...(options.breakpoints || {}) },
+  // Helper for deep merge
+  const deepMerge = (target, source) => {
+    const output = { ...target };
+
+    // For each property in source
+    Object.keys(source).forEach(key => {
+      // If the property is an object and exists in both
+      if (
+        typeof source[key] === 'object' &&
+        source[key] !== null &&
+        target[key] &&
+        typeof target[key] === 'object' &&
+        target[key] !== null
+      ) {
+        // Recursively merge objects
+        output[key] = deepMerge(target[key], source[key]);
+      } else {
+        // Otherwise just copy the source value
+        output[key] = source[key];
+      }
+    });
+
+    return output;
   };
+
+  // Debug: log what we're merging
+  console.log('Creating theme, custom options:', options);
+
+  // Deep merge with default theme
+  const merged = deepMerge(defaultTheme, options);
+
+  // Debug: log result
+  console.log('Merged theme result:', merged);
+
+  return merged;
 };
 
 export default defaultTheme;

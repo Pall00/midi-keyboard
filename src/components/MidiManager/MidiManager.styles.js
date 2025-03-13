@@ -10,7 +10,8 @@ export const ManagerContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border: 1px solid #333;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -41,18 +42,18 @@ export const Title = styled.h3`
  */
 export const ToggleButton = styled.button`
   background-color: transparent;
-  color: #90CAF9;
+  color: #90caf9;
   border: none;
   padding: 0.375rem 0.625rem;
   font-size: 0.875rem;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: rgba(144, 202, 249, 0.1);
   }
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.2);
@@ -63,17 +64,21 @@ export const ToggleButton = styled.button`
  * Content area for MIDI manager
  */
 export const ManagerContent = styled.div`
-  max-height: ${props => props.$expanded ? '500px' : '0'};
-  opacity: ${props => props.$expanded ? '1' : '0'};
+  max-height: ${props => (props.$expanded ? '500px' : '0')};
+  opacity: ${props => (props.$expanded ? '1' : '0')};
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-  padding: ${props => props.$expanded ? '1rem' : '0 1rem'};
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
+  padding: ${props => (props.$expanded ? '1rem' : '0 1rem')};
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  
+
   /* Adjust for compact mode */
-  ${props => props.$compact && `
+  ${props =>
+    props.$compact &&
+    `
     gap: 0.5rem;
     padding: ${props.$expanded ? '0.75rem' : '0 0.75rem'};
     
@@ -130,12 +135,12 @@ export const DebugContent = styled.pre`
 export const ClearButton = styled.button`
   background: none;
   border: none;
-  color: #90CAF9;
+  color: #90caf9;
   font-size: 0.75rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
-  
+
   &:hover {
     background-color: rgba(144, 202, 249, 0.1);
     text-decoration: underline;

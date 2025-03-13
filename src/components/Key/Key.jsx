@@ -1,18 +1,22 @@
 // src/components/Key/Key.jsx
+import { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { ThemeContext } from 'styled-components';
 
-import { 
-  KeyContainer, 
-  NoteLabel, 
-  NoteName, 
-  OctaveNumber, 
+// Import internal styled elements
+import {
+  KeyContainer,
+  InnerKeyContent,
+  NoteLabel,
+  NoteName,
+  OctaveNumber,
   KeyboardShortcut,
-  KeyIndicator 
+  KeyIndicator,
 } from './Key.styles';
 
 /**
  * Piano Key Component
- * 
+ *
  * Renders an individual piano key (white or black) with appropriate styling
  * and handlers for mouse/touch interactions.
  */
@@ -31,6 +35,24 @@ const Key = ({
   style,
   ...restProps
 }) => {
+  // Get theme from styled-components context
+  const theme = useContext(ThemeContext);
+
+  // Debug: Log the theme received by this component
+  useEffect(() => {
+    if (theme) {
+      console.log(`Key ${note} theme:`, {
+        color: isBlack
+          ? isActive
+            ? theme.colors.activeBlackKey
+            : theme.colors.blackKey
+          : isActive
+            ? theme.colors.activeWhiteKey
+            : theme.colors.whiteKey,
+      });
+    }
+  }, [note, isBlack, isActive, theme]);
+
   // Split the note into note name and octave number
   const noteMatch = note.match(/^([A-G][#]?)(\d+)$/);
 
@@ -42,89 +64,84 @@ const Key = ({
   const noteName = noteMatch[1];
   const octaveNumber = noteMatch[2];
 
-  // Define static styles separate from animated styles
-  const keyStyles = {
-    height: isBlack ? '90px' : '150px',
-    zIndex: isBlack ? 2 : 1,
-    ...style,
+  // Event handlers
+  const handleKeyMouseDown = e => {
+    e.stopPropagation();
+    onMouseDown(note);
   };
 
-  // Animation properties for Framer Motion
-  const animationProps = {
-    animate: {
-      backgroundColor: isActive 
-        ? (isBlack ? '#555555' : '#E0E8FF') 
-        : (isBlack ? '#333333' : '#FFFFFF'),
-      y: isActive ? 2 : 0,
-      boxShadow: isActive
-        ? '0 1px 2px rgba(0, 0, 0, 0.2)'
-        : isBlack
-          ? '0 2px 3px rgba(0, 0, 0, 0.3)'
-          : '0 2px 5px rgba(0, 0, 0, 0.15)',
-    },
-    transition: { duration: 0.05 },
+  const handleKeyMouseUp = e => {
+    e.stopPropagation();
+    onMouseUp(note);
   };
+
+  const handleKeyMouseEnter = e => {
+    e.stopPropagation();
+    if (onMouseEnter) onMouseEnter(note);
+  };
+
+  const handleKeyMouseLeave = e => {
+    e.stopPropagation();
+    if (onMouseLeave) onMouseLeave(note);
+  };
+
+  const handleKeyTouchStart = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    onTouchStart(note);
+  };
+
+  const handleKeyTouchEnd = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    onTouchEnd(note);
+  };
+
+  // Debug: Console log the calculated colors
+  const keyColor = isBlack
+    ? isActive
+      ? theme?.colors?.activeBlackKey
+      : theme?.colors?.blackKey
+    : isActive
+      ? theme?.colors?.activeWhiteKey
+      : theme?.colors?.whiteKey;
+
+  console.log(`Key ${note} render:`, {
+    isBlack,
+    isActive,
+    calculatedColor: keyColor,
+    themeAvailable: !!theme,
+  });
 
   return (
     <KeyContainer
-      style={keyStyles}
+      style={style}
       $isBlack={isBlack}
-      {...animationProps}
+      $isActive={isActive}
       role="button"
       aria-pressed={isActive}
       tabIndex={0}
       aria-label={`${noteName} ${octaveNumber} piano key`}
-      onMouseDown={e => {
-        e.stopPropagation();
-        onMouseDown(note);
-      }}
-      onMouseUp={e => {
-        e.stopPropagation();
-        onMouseUp(note);
-      }}
-      onMouseEnter={e => {
-        e.stopPropagation();
-        if (onMouseEnter) onMouseEnter(note);
-      }}
-      onMouseLeave={e => {
-        e.stopPropagation();
-        if (onMouseLeave) onMouseLeave(note);
-      }}
-      onTouchStart={e => {
-        e.preventDefault(); // Prevent default touch behavior
-        e.stopPropagation();
-        onTouchStart(note);
-      }}
-      onTouchEnd={e => {
-        e.preventDefault();
-        e.stopPropagation();
-        onTouchEnd(note);
-      }}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onMouseDown(note);
-        }
-      }}
-      onKeyUp={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onMouseUp(note);
-        }
-      }}
+      onMouseDown={handleKeyMouseDown}
+      onMouseUp={handleKeyMouseUp}
+      onMouseEnter={handleKeyMouseEnter}
+      onMouseLeave={handleKeyMouseLeave}
+      onTouchStart={handleKeyTouchStart}
+      onTouchEnd={handleKeyTouchEnd}
+      // Manual color prop to force the issue - not ideal but good for debugging
+      $keyColor={keyColor}
       {...restProps}
     >
-      <NoteLabel>
-        <NoteName $isBlack={isBlack}>{noteName}</NoteName>
-        <OctaveNumber $isBlack={isBlack}>{octaveNumber}</OctaveNumber>
-      </NoteLabel>
+      <InnerKeyContent>
+        <NoteLabel>
+          <NoteName $isBlack={isBlack}>{noteName}</NoteName>
+          <OctaveNumber $isBlack={isBlack}>{octaveNumber}</OctaveNumber>
+        </NoteLabel>
 
-      {keyboardShortcut && (
-        <KeyboardShortcut>{keyboardShortcut}</KeyboardShortcut>
-      )}
+        {keyboardShortcut && <KeyboardShortcut>{keyboardShortcut}</KeyboardShortcut>}
 
-      {/* Add green dot indicator for highlighted notes */}
-      {isHighlighted && <KeyIndicator $isBlack={isBlack} />}
+        {isHighlighted && <KeyIndicator $isBlack={isBlack} />}
+      </InnerKeyContent>
     </KeyContainer>
   );
 };

@@ -1,5 +1,6 @@
 // src/components/MidiConnectionStatus/MidiConnectionStatus.styles.js
 import styled, { keyframes, css } from 'styled-components';
+
 import { CONNECTION_STATUS } from '../../hooks/useMidiConnectionManager';
 
 // Status colors
@@ -31,10 +32,14 @@ export const StatusContainer = styled.div`
   border-radius: 4px;
   background-color: ${props => STATUS_BACKGROUNDS[props.$status] || 'rgba(0, 0, 0, 0.1)'};
   animation: fadeIn 0.3s ease;
-  
+
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 `;
 
@@ -61,14 +66,18 @@ export const StatusIndicator = styled.div`
   border-radius: 50%;
   background-color: ${props => STATUS_COLORS[props.$status] || '#999'};
   margin-top: 0.25rem;
-  
+
   /* Apply animations based on status */
   animation: ${props => {
     if (props.$status === CONNECTION_STATUS.CONNECTING) {
-      return css`${pulse} 1.5s infinite ease-in-out`;
+      return css`
+        ${pulse} 1.5s infinite ease-in-out
+      `;
     }
     if (props.$status === CONNECTION_STATUS.ERROR) {
-      return css`${blink} 2s infinite ease-in-out`;
+      return css`
+        ${blink} 2s infinite ease-in-out
+      `;
     }
     return 'none';
   }};
@@ -81,7 +90,8 @@ export const StatusLabel = styled.div`
   font-size: 0.75rem;
   color: #999;
   margin-bottom: 0.25rem;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -92,7 +102,8 @@ export const StatusMessage = styled.div`
   font-size: 0.875rem;
   font-weight: 500;
   color: ${props => props.theme.colors?.whiteKeyText || '#555'};
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -106,7 +117,8 @@ export const DeviceInfo = styled.div`
   gap: 0.25rem;
   font-size: 0.75rem;
   color: #aaa;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -117,7 +129,7 @@ export const ErrorContainer = styled.div`
   margin-top: 0.75rem;
   padding: 0.75rem;
   background-color: rgba(244, 67, 54, 0.05);
-  border-left: 3px solid #F44336;
+  border-left: 3px solid #f44336;
   border-radius: 0 4px 4px 0;
 `;
 
@@ -127,9 +139,10 @@ export const ErrorContainer = styled.div`
 export const ErrorTitle = styled.div`
   font-weight: 600;
   font-size: 0.875rem;
-  color: #F44336;
+  color: #f44336;
   margin-bottom: 0.375rem;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -141,7 +154,8 @@ export const ErrorMessage = styled.div`
   color: #ddd;
   margin-bottom: 0.75rem;
   line-height: 1.4;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
@@ -160,23 +174,24 @@ export const ErrorActions = styled.div`
 export const RetryButton = styled.button`
   padding: 0.375rem 0.75rem;
   background-color: rgba(244, 67, 54, 0.2);
-  color: #F44336;
+  color: #f44336;
   border: 1px solid rgba(244, 67, 54, 0.5);
   border-radius: 4px;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
-  
+
   &:hover {
     background-color: rgba(244, 67, 54, 0.3);
   }
-  
+
   &:active {
     transform: translateY(1px);
   }
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
@@ -188,18 +203,19 @@ export const RetryButton = styled.button`
  */
 export const HelpLink = styled.a`
   font-size: 0.75rem;
-  color: #90CAF9;
+  color: #90caf9;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  font-family: ${props => props.theme.typography?.fontFamily || 
+  font-family: ${props =>
+    props.theme.typography?.fontFamily ||
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
-  
+
   &:hover {
     text-decoration: underline;
-    color: #64B5F6;
+    color: #64b5f6;
   }
-  
+
   &:focus {
     outline: none;
     text-decoration: underline;

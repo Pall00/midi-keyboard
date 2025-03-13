@@ -1,26 +1,28 @@
 // src/components/MidiManager/MidiManager.jsx
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { 
-  ManagerContainer, 
-  ControlsContainer, 
-  Title, 
-  ToggleButton,
-  ManagerContent,
-  DebugPanel,
-  DebugHeader,
-  DebugContent,
-  ClearButton
-} from './MidiManager.styles';
+
 
 import MidiDeviceSelector from '../MidiDeviceSelector';
 import MidiConnectionStatus from '../MidiConnectionStatus';
 import useMidiConnectionManager, { CONNECTION_STATUS } from '../../hooks/useMidiConnectionManager';
 import { getMidiPreferences, saveMidiPreferences } from '../../utils/midiStorageManager';
 
+import {
+  ManagerContainer,
+  ControlsContainer,
+  Title,
+  ToggleButton,
+  ManagerContent,
+  DebugPanel,
+  DebugHeader,
+  DebugContent,
+  ClearButton,
+} from './MidiManager.styles';
+
 /**
  * MIDI Manager Component
- * 
+ *
  * Integrated component to handle all MIDI device connection management
  * with UI for device selection, connection status, and debug information.
  */
@@ -30,15 +32,15 @@ const MidiManager = ({
   compact = false,
   autoConnect = true,
   className,
-  initialExpanded = false
+  initialExpanded = false,
 }) => {
   // Get user preferences
   const preferences = getMidiPreferences();
-  
+
   // Local state
   const [expanded, setExpanded] = useState(initialExpanded);
   const [showDebug, setShowDebug] = useState(preferences.showDebugInfo || false);
-  
+
   // Use our MIDI connection manager hook
   const {
     connectionStatus,
@@ -52,40 +54,40 @@ const MidiManager = ({
     disconnect,
     refreshDevices,
     retryConnection,
-    clearDebugInfo
+    clearDebugInfo,
   } = useMidiConnectionManager({
     onMidiMessage,
     autoConnect,
-    debug: showDebug
+    debug: showDebug,
   });
-  
+
   // Handle connection status changes
   const isConnected = connectionStatus === CONNECTION_STATUS.CONNECTED;
-  
+
   // Notify parent when connection status changes
   useEffect(() => {
     if (onConnectionChange) {
       onConnectionChange({
         status: connectionStatus,
         device: selectedInput,
-        error: errorInfo
+        error: errorInfo,
       });
     }
   }, [connectionStatus, selectedInput, errorInfo, onConnectionChange]);
-  
+
   // Toggle debug info
   const toggleDebug = useCallback(() => {
     const newState = !showDebug;
     setShowDebug(newState);
     saveMidiPreferences({ showDebugInfo: newState });
   }, [showDebug]);
-  
+
   return (
     <ManagerContainer className={className}>
       <ControlsContainer>
         <Title>MIDI Device</Title>
-        
-        <ToggleButton 
+
+        <ToggleButton
           onClick={() => setExpanded(!expanded)}
           aria-expanded={expanded}
           aria-controls="midi-manager-content"
@@ -93,20 +95,16 @@ const MidiManager = ({
           {expanded ? 'Hide' : 'Show'} Controls
         </ToggleButton>
       </ControlsContainer>
-      
-      <ManagerContent 
-        id="midi-manager-content"
-        $expanded={expanded}
-        $compact={compact}
-      >
+
+      <ManagerContent id="midi-manager-content" $expanded={expanded} $compact={compact}>
         {/* Connection status display */}
-        <MidiConnectionStatus 
+        <MidiConnectionStatus
           connectionStatus={connectionStatus}
           selectedDevice={selectedInput}
           error={errorInfo}
           onRetry={retryConnection}
         />
-        
+
         {/* Device selector */}
         <MidiDeviceSelector
           devices={inputs}
@@ -119,7 +117,7 @@ const MidiManager = ({
           isRefreshing={isRefreshing}
           disabled={connectionStatus === CONNECTION_STATUS.UNAVAILABLE}
         />
-        
+
         {/* Debug panel */}
         {showDebug && (
           <DebugPanel>
@@ -130,17 +128,20 @@ const MidiManager = ({
             <DebugContent>{debugInfo || 'No debug info available'}</DebugContent>
           </DebugPanel>
         )}
-        
+
         {/* Debug toggle */}
         <div style={{ marginTop: '0.5rem', textAlign: 'right' }}>
-          <button onClick={toggleDebug} style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: '#999', 
-            fontSize: '0.75rem',
-            cursor: 'pointer',
-            textDecoration: 'underline'
-          }}>
+          <button
+            onClick={toggleDebug}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#999',
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
             {showDebug ? 'Hide Debug Info' : 'Show Debug Info'}
           </button>
         </div>
@@ -161,7 +162,7 @@ MidiManager.propTypes = {
   /** Optional className for styling */
   className: PropTypes.string,
   /** Whether the controls are initially expanded */
-  initialExpanded: PropTypes.bool
+  initialExpanded: PropTypes.bool,
 };
 
 export default MidiManager;

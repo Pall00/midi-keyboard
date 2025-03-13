@@ -6,17 +6,19 @@ import { ThemeProvider } from 'styled-components';
 import Keyboard from '../Keyboard';
 import MidiManager from '../MidiManager';
 import KeyboardSizeSelector from '../KeyboardSizeSelector';
+import ThemeSelector from '../ThemeSelector';
 import { defaultTheme, createTheme } from '../../styles/theme';
 import { defaultKeyboardMapping } from '../../utils/keyboardMapping';
-import { 
-  defaultLayoutId, 
-  getKeyboardLayout, 
-  keyRangeToLayoutId 
+import {
+  defaultLayoutId,
+  getKeyboardLayout,
+  keyRangeToLayoutId,
 } from '../../utils/keyboardLayouts';
 import useAudioEngine from '../../hooks/useAudioEngine';
 import useKeyboardInput from '../../hooks/useKeyboardInput';
 import usePianoNotes from '../../hooks/usePianoNotes';
 import { CONNECTION_STATUS } from '../../hooks/useMidiConnectionManager';
+import { pianoThemes } from '../../themes';
 
 import {
   PianoContainer,
@@ -30,15 +32,14 @@ import {
   MidiSection,
   AdvancedControlsContainer,
   AdvancedControlsToggle,
-  AdvancedControlsContent
+  AdvancedControlsContent,
 } from './Piano.styles';
 
 /**
  * Piano Component
  *
  * Main component that integrates the keyboard, audio engine, and input handlers.
- * Now includes MIDI support via the MidiManager component and
- * keyboard size selection for different piano layouts.
+ * Now includes MIDI support, keyboard size selection, and theme selection.
  */
 const Piano = ({
   keyRange,
@@ -55,19 +56,32 @@ const Piano = ({
   onKeyboardSizeChange,
   initialKeyboardLayout,
   showKeyboardSizeSelector = true,
+  initialTheme = 'default',
+  onThemeChange,
 }) => {
-  // Apply custom theme if provided
-  const theme = customTheme ? createTheme(customTheme) : defaultTheme;
-
   // Track whether audio has been started
   const [audioStarted, setAudioStarted] = useState(false);
-  
+
+  // State for theme
+  const [currentTheme, setCurrentTheme] = useState(
+    customTheme || (initialTheme && pianoThemes[initialTheme]?.theme) || defaultTheme
+  );
+
+  // Debug: Log the initial theme
+  useEffect(() => {
+    console.log('Piano initial theme:', initialTheme);
+    console.log('Piano component theme state set to:', {
+      themeId: initialTheme,
+      themeColors: currentTheme.colors,
+    });
+  }, [initialTheme, currentTheme]);
+
   // Determine initial keyboard layout
   const initialLayoutId = initialKeyboardLayout || keyRangeToLayoutId(keyRange) || defaultLayoutId;
-  
+
   // State for keyboard layout
   const [keyboardLayoutId, setKeyboardLayoutId] = useState(initialLayoutId);
-  
+
   // State for the current key range based on the selected layout
   const [currentKeyRange, setCurrentKeyRange] = useState(() => {
     // If a direct keyRange prop is provided, use it as the initial value
@@ -78,10 +92,10 @@ const Piano = ({
     const layout = getKeyboardLayout(initialLayoutId);
     return {
       startNote: layout.startNote,
-      endNote: layout.endNote
+      endNote: layout.endNote,
     };
   });
-  
+
   // State for advanced controls visibility
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
 
@@ -205,28 +219,56 @@ const Piano = ({
       deviceName: connection.device?.name || null,
     });
   }, []);
-  
+
   // Handle keyboard layout/size change
-  const handleKeyboardSizeChange = useCallback(layoutId => {
-    const layout = getKeyboardLayout(layoutId);
-    setKeyboardLayoutId(layoutId);
-    
-    // Update the key range based on the new layout
-    const newKeyRange = {
-      startNote: layout.startNote,
-      endNote: layout.endNote
-    };
-    
-    setCurrentKeyRange(newKeyRange);
-    
-    // Notify parent component if callback is provided
-    if (onKeyboardSizeChange) {
-      onKeyboardSizeChange(layoutId, newKeyRange);
-    }
-  }, [onKeyboardSizeChange]);
+  const handleKeyboardSizeChange = useCallback(
+    layoutId => {
+      const layout = getKeyboardLayout(layoutId);
+      setKeyboardLayoutId(layoutId);
+
+      // Update the key range based on the new layout
+      const newKeyRange = {
+        startNote: layout.startNote,
+        endNote: layout.endNote,
+      };
+
+      setCurrentKeyRange(newKeyRange);
+
+      // Notify parent component if callback is provided
+      if (onKeyboardSizeChange) {
+        onKeyboardSizeChange(layoutId, newKeyRange);
+      }
+    },
+    [onKeyboardSizeChange]
+  );
+
+  // Handle theme change
+  const handleThemeChange = useCallback(
+    (newTheme, themeId) => {
+      console.log('Theme changed to:', themeId);
+      if (newTheme && newTheme.colors) {
+        console.log('Theme colors:', {
+          whiteKey: newTheme.colors.whiteKey,
+          blackKey: newTheme.colors.blackKey,
+          activeWhiteKey: newTheme.colors.activeWhiteKey,
+          activeBlackKey: newTheme.colors.activeBlackKey,
+        });
+      } else {
+        console.warn('Invalid theme object received:', newTheme);
+      }
+
+      setCurrentTheme(newTheme);
+
+      // Call external handler if provided
+      if (onThemeChange) {
+        onThemeChange(newTheme, themeId);
+      }
+    },
+    [onThemeChange]
+  );
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={currentTheme}>
       <PianoContainer>
         {!audioStarted ? (
           <ControlsContainer>
@@ -253,7 +295,8 @@ const Piano = ({
                     {isSustainActive ? 'On' : 'Off'}
                   </SustainPedal>
                 </ControlGroup>
-                
+
+                {/* Keyboard Size Selector */}
                 {showKeyboardSizeSelector && (
                   <ControlGroup>
                     <KeyboardSizeSelector
@@ -264,15 +307,24 @@ const Piano = ({
                     />
                   </ControlGroup>
                 )}
-                
-                <AdvancedControlsToggle 
+
+                {/* Theme Selector */}
+                <ControlGroup>
+                  <ThemeSelector
+                    onThemeChange={handleThemeChange}
+                    initialTheme={initialTheme}
+                    displayMode="dropdown"
+                  />
+                </ControlGroup>
+
+                <AdvancedControlsToggle
                   onClick={() => setShowAdvancedControls(!showAdvancedControls)}
                 >
                   {showAdvancedControls ? 'Hide Advanced Options' : 'Show Advanced Options'}
                 </AdvancedControlsToggle>
               </ControlsContainer>
             )}
-            
+
             {showControls && showAdvancedControls && (
               <AdvancedControlsContainer $expanded={showAdvancedControls}>
                 <AdvancedControlsContent>
@@ -284,6 +336,13 @@ const Piano = ({
                       showInfo={true}
                     />
                   )}
+
+                  {/* Theme selector grid in advanced controls */}
+                  <ThemeSelector
+                    onThemeChange={handleThemeChange}
+                    initialTheme={initialTheme}
+                    displayMode="grid"
+                  />
                 </AdvancedControlsContent>
               </AdvancedControlsContainer>
             )}
@@ -310,6 +369,7 @@ const Piano = ({
               showKeyboardShortcuts={enableKeyboard}
               keyboardMapping={defaultKeyboardMapping}
               sustainEnabled={isSustainActive}
+              customTheme={currentTheme} // Pass the current theme here
               width={width}
               height={height}
             />
@@ -361,6 +421,10 @@ Piano.propTypes = {
   initialKeyboardLayout: PropTypes.string,
   /** Whether to show the keyboard size selector */
   showKeyboardSizeSelector: PropTypes.bool,
+  /** Initial theme ID */
+  initialTheme: PropTypes.string,
+  /** Called when theme changes */
+  onThemeChange: PropTypes.func,
 };
 
 Piano.defaultProps = {
@@ -378,6 +442,8 @@ Piano.defaultProps = {
   onKeyboardSizeChange: null,
   initialKeyboardLayout: null,
   showKeyboardSizeSelector: true,
+  initialTheme: 'default',
+  onThemeChange: null,
 };
 
 export default Piano;
