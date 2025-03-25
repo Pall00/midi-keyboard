@@ -1,0 +1,24 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Technical stack
+
+# Piano Teacher Tech Stack
+
+## react-piano-keyboard
+A customizable piano keyboard component for React applications.
+
+- **Framework**: React (peer dependency)
+- **Build Tool**: Rollup
+- **Testing**: Jest
+- **Styling**: Styled Components
+- **Animation**: Framer Motion 10.0.0
+- **Audio**: Tone.js 14.7.77
+- **MIDI**: WebMIDI 3.1.6
+- **Key Libraries**:
+  - Prop Types (for component props validation)
+
+

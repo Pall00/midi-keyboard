@@ -1,11 +1,12 @@
 // src/context/PianoContext.jsx
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import useAudioEngine from '../hooks/useAudioEngine';
 import usePianoNotes from '../hooks/usePianoNotes';
 import useMidiConnectionManager from '../hooks/useMidiConnectionManager';
 import { defaultTheme, createTheme } from '../styles/theme';
+import { midiNoteToNoteName, createPlayNotesFunction } from '../utils/midiNotePlayer';
 
 // Create context
 const PianoContext = createContext();
@@ -31,6 +32,9 @@ export const usePianoContext = () => {
 export const PianoProvider = ({ children, initialSettings = {}, customTheme = null }) => {
   // Track whether audio context has been started
   const [audioStarted, setAudioStarted] = useState(false);
+
+  // Ref to track note timeouts
+  const noteTimeoutsRef = useRef({});
 
   // Settings state for the piano
   const [settings, setSettings] = useState({
@@ -123,6 +127,18 @@ export const PianoProvider = ({ children, initialSettings = {}, customTheme = nu
     setSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
+  // Create the playNotes function using our utility
+  const playNotes = useCallback(
+    createPlayNotesFunction({
+      startAudio,
+      handleNoteOn,
+      handleNoteOff,
+      audioStarted,
+      noteTimeoutsRef,
+    }), 
+    [startAudio, handleNoteOn, handleNoteOff, audioStarted]
+  );
+
   // Combined context value
   const contextValue = {
     // State
@@ -158,6 +174,10 @@ export const PianoProvider = ({ children, initialSettings = {}, customTheme = nu
     setSustain: audioEngine.setSustain,
     changeVolume: audioEngine.changeVolume,
     changeReverb: audioEngine.changeReverb,
+    
+    // New programmatic note playing method
+    playNotes,
+    midiNoteToNoteName,
 
     // MIDI methods (updated property names to match new hook)
     connectMidiDevice: midiConnection.connectToDevice,

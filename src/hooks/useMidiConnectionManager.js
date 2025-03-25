@@ -18,6 +18,20 @@ export const CONNECTION_STATUS = {
   ERROR: 'error', // Error occurred
 };
 
+// Helper function to check if a device is a port1/MIDI 1 type device
+const isPort1Device = (deviceName) => {
+  if (!deviceName) return false;
+  
+  const name = deviceName.toLowerCase();
+  return name.includes('port1') || 
+         name.includes('port 1') || 
+         name.includes('midi 1') || 
+         name.includes('midi1') ||
+         name === 'port 1' ||
+         name === 'midi 1' ||
+         (name.includes('midi') && name.includes('1'));
+};
+
 /**
  * Enhanced hook for managing MIDI device connections
  *
@@ -58,29 +72,6 @@ const useMidiConnectionManager = ({
       }
     },
     [debug]
-  );
-
-  /**
-   * Handle MIDI device connection
-   * @param {Object} e - Connection event object
-   */
-  const handleDeviceConnected = useCallback(
-    e => {
-      logDebug(`Device connected: ${e.port.name} (${e.port.id})`);
-
-      const WebMidi = webMidiRef.current;
-      if (WebMidi && WebMidi.enabled) {
-        setInputs(prevInputs => {
-          // Check if this is actually a new device
-          const deviceExists = prevInputs.some(input => input.id === e.port.id);
-          if (!deviceExists && e.port.type === 'input') {
-            return [...prevInputs, e.port];
-          }
-          return prevInputs;
-        });
-      }
-    },
-    [logDebug]
   );
 
   /**
@@ -288,6 +279,45 @@ const useMidiConnectionManager = ({
   );
 
   /**
+   * Handle MIDI device connection
+   * @param {Object} e - Connection event object
+   */
+  const handleDeviceConnected = useCallback(
+    e => {
+      logDebug(`Device connected: ${e.port.name} (${e.port.id})`);
+
+      const WebMidi = webMidiRef.current;
+      if (WebMidi && WebMidi.enabled) {
+        setInputs(prevInputs => {
+          // Check if this is actually a new device
+          const deviceExists = prevInputs.some(input => input.id === e.port.id);
+          if (!deviceExists && e.port.type === 'input') {
+            // If not currently connected to a device or the new device is port1, try to connect
+            const isPort1 = isPort1Device(e.port.name);
+            
+            if (!selectedInput || isPort1) {
+              // Use setTimeout to avoid state update conflicts
+              setTimeout(() => {
+                if (isPort1) {
+                  logDebug(`Automatically connecting to detected port1/MIDI 1: ${e.port.name}`);
+                  connectToDevice(e.port.id);
+                } else if (!selectedInput) {
+                  logDebug(`No device connected, connecting to new device: ${e.port.name}`);
+                  connectToDevice(e.port.id);
+                }
+              }, 0);
+            }
+            
+            return [...prevInputs, e.port];
+          }
+          return prevInputs;
+        });
+      }
+    },
+    [logDebug, selectedInput, connectToDevice]
+  );
+
+  /**
    * Auto-connect to the last used device or the first available
    * @returns {Object} Result of the connection attempt
    */
@@ -300,6 +330,14 @@ const useMidiConnectionManager = ({
     // Check if we're already connected to something
     if (selectedInput) {
       return { success: true, device: selectedInput, reason: 'Already connected' };
+    }
+
+    // Look for a device named "port1" first (prioritize this connection)
+    const port1Device = inputs.find(input => isPort1Device(input.name));
+    
+    if (port1Device) {
+      logDebug(`Auto-connecting to detected port1/MIDI 1: ${port1Device.name}`);
+      return connectToDevice(port1Device.id);
     }
 
     // Try to connect to the last used device
@@ -378,8 +416,19 @@ const useMidiConnectionManager = ({
         WebMidi.addListener('connected', handleDeviceConnected);
         WebMidi.addListener('disconnected', handleDeviceDisconnected);
 
-        // Try to auto-connect if enabled
-        if (autoConnect && WebMidi.inputs.length > 0) {
+        // Check specifically for port1 before regular auto-connect
+        const port1Device = WebMidi.inputs.find(input => isPort1Device(input.name));
+        
+        if (port1Device) {
+          logDebug(`Found port1/MIDI 1 device at startup: ${port1Device.name}`);
+          setTimeout(() => {
+            if (isMounted) {
+              connectToDevice(port1Device.id);
+            }
+          }, 0);
+        }
+        // Try to auto-connect if enabled and port1 wasn't found
+        else if (autoConnect && WebMidi.inputs.length > 0) {
           setTimeout(() => {
             if (isMounted) {
               autoConnectToDevice();
@@ -440,6 +489,7 @@ const useMidiConnectionManager = ({
     handleDeviceDisconnected,
     removeMidiHandlers,
     autoConnectToDevice,
+    connectToDevice,
   ]);
 
   /**

@@ -54,6 +54,12 @@ export {
   dbToAmplitude,
 } from './utils/audioUtils';
 
+// MIDI Note Player Utilities
+export {
+  midiNoteToNoteName,
+  createPlayNotesFunction,
+} from './utils/midiNotePlayer';
+
 // MIDI Storage Utilities
 export {
   saveMidiDevicePreference,

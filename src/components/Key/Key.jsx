@@ -38,20 +38,20 @@ const Key = ({
   // Get theme from styled-components context
   const theme = useContext(ThemeContext);
 
-  // Debug: Log the theme received by this component
-  useEffect(() => {
-    if (theme) {
-      console.log(`Key ${note} theme:`, {
-        color: isBlack
-          ? isActive
-            ? theme.colors.activeBlackKey
-            : theme.colors.blackKey
-          : isActive
-            ? theme.colors.activeWhiteKey
-            : theme.colors.whiteKey,
-      });
-    }
-  }, [note, isBlack, isActive, theme]);
+  // Debug: Log the theme received by this component - REMOVED FOR PRODUCTION
+  // useEffect(() => {
+  //   if (theme) {
+  //     console.log(`Key ${note} theme:`, {
+  //       color: isBlack
+  //         ? isActive
+  //           ? theme.colors.activeBlackKey
+  //           : theme.colors.blackKey
+  //         : isActive
+  //           ? theme.colors.activeWhiteKey
+  //           : theme.colors.whiteKey,
+  //     });
+  //   }
+  // }, [note, isBlack, isActive, theme]);
 
   // Split the note into note name and octave number
   const noteMatch = note.match(/^([A-G][#]?)(\d+)$/);
@@ -97,7 +97,7 @@ const Key = ({
     onTouchEnd(note);
   };
 
-  // Debug: Console log the calculated colors
+  // Debug: Console log the calculated colors - REMOVED FOR PRODUCTION
   const keyColor = isBlack
     ? isActive
       ? theme?.colors?.activeBlackKey
@@ -106,12 +106,12 @@ const Key = ({
       ? theme?.colors?.activeWhiteKey
       : theme?.colors?.whiteKey;
 
-  console.log(`Key ${note} render:`, {
-    isBlack,
-    isActive,
-    calculatedColor: keyColor,
-    themeAvailable: !!theme,
-  });
+  // console.log(`Key ${note} render:`, {
+  //   isBlack,
+  //   isActive,
+  //   calculatedColor: keyColor,
+  //   themeAvailable: !!theme,
+  // });
 
   return (
     <KeyContainer

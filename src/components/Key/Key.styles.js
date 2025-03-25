@@ -9,7 +9,7 @@ export const KeyContainer = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 8px;
+  padding-bottom: 4px;
   user-select: none;
   cursor: pointer;
   overflow: hidden;
@@ -41,8 +41,8 @@ export const KeyContainer = styled.div`
     props.$isActive
       ? `0 1px 2px ${props.theme.colors.keyShadow}`
       : props.$isBlack
-        ? `0 2px 3px ${props.theme.colors.keyShadow}`
-        : `0 2px 5px ${props.theme.colors.keyShadow}`};
+        ? `0 1px 2px ${props.theme.colors.keyShadow}`
+        : `0 1px 3px ${props.theme.colors.keyShadow}`};
 
   /* Add transition for smooth changes */
   transition:
@@ -51,7 +51,7 @@ export const KeyContainer = styled.div`
     transform 0.1s ease;
 
   /* Add transform for active state */
-  transform: translateY(${props => (props.$isActive ? '2px' : '0')});
+  transform: translateY(${props => (props.$isActive ? '1px' : '0')});
 `;
 
 /**
@@ -72,7 +72,7 @@ export const InnerKeyContent = styled.div`
  */
 export const NoteLabel = styled.div`
   position: absolute;
-  bottom: 8px;
+  bottom: 4px;
   font-size: ${props => props.theme.typography.noteLabelSize};
   line-height: 1;
   font-weight: 500;
@@ -98,7 +98,7 @@ export const NoteName = styled.span`
 export const OctaveNumber = styled.span`
   font-size: ${props => props.theme.typography.octaveLabelSize};
   opacity: 0.8;
-  margin-top: 1px;
+  margin-top: 0;
   color: ${props =>
     props.$isBlack ? props.theme.colors.blackKeyText : props.theme.colors.whiteKeyText};
 `;
@@ -108,7 +108,7 @@ export const OctaveNumber = styled.span`
  */
 export const KeyboardShortcut = styled.span`
   position: absolute;
-  bottom: 30px;
+  bottom: 22px;
   font-size: ${props => props.theme.typography.keyboardShortcutSize};
   color: ${props => props.theme.colors.keyboardShortcut};
   font-family: ${props => props.theme.typography.fontFamily};
@@ -119,14 +119,14 @@ export const KeyboardShortcut = styled.span`
  */
 export const KeyIndicator = styled.div`
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background-color: ${props => props.theme.colors.highlightKey};
-  top: ${props => (props.$isBlack ? '15px' : '30px')};
+  top: ${props => (props.$isBlack ? '12px' : '25px')};
   left: 50%; /* Perfect center */
   transform: translateX(-50%);
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
   animation: pulse ${props => props.theme.animation.highlightPulseDuration}s infinite;
   z-index: 3;
 

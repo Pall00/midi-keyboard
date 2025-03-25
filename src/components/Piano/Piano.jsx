@@ -1,5 +1,5 @@
 // src/components/Piano/Piano.jsx
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeProvider } from 'styled-components';
 
@@ -14,6 +14,7 @@ import {
   getKeyboardLayout,
   keyRangeToLayoutId,
 } from '../../utils/keyboardLayouts';
+import { midiNoteToNoteName, createPlayNotesFunction } from '../../utils/midiNotePlayer';
 import useAudioEngine from '../../hooks/useAudioEngine';
 import useKeyboardInput from '../../hooks/useKeyboardInput';
 import usePianoNotes from '../../hooks/usePianoNotes';
@@ -30,10 +31,30 @@ import {
   VolumeSlider,
   InstructionsText,
   MidiSection,
-  AdvancedControlsContainer,
   AdvancedControlsToggle,
   AdvancedControlsContent,
+  SettingsButton,
+  CompactControlsPanel,
+  MiniStatusDisplay,
+  SettingsSection,
+  SectionTitle,
+  ControlRow,
 } from './Piano.styles';
+
+// Custom MidiManager with custom styling
+const CustomMidiManager = ({ onMidiMessage, onConnectionChange }) => {
+  return (
+    <MidiSection>
+      <MidiManager
+        onMidiMessage={onMidiMessage}
+        onConnectionChange={onConnectionChange}
+        compact={true}
+        autoConnect={false}
+        initialExpanded={true}
+      />
+    </MidiSection>
+  );
+};
 
 /**
  * Piano Component
@@ -41,7 +62,7 @@ import {
  * Main component that integrates the keyboard, audio engine, and input handlers.
  * Now includes MIDI support, keyboard size selection, and theme selection.
  */
-const Piano = ({
+const Piano = forwardRef(({
   keyRange,
   onNoteOn,
   onNoteOff,
@@ -58,9 +79,15 @@ const Piano = ({
   showKeyboardSizeSelector = true,
   initialTheme = 'default',
   onThemeChange,
-}) => {
+}, ref) => {
   // Track whether audio has been started
   const [audioStarted, setAudioStarted] = useState(false);
+  
+  // Track settings panel visibility
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+
+  // Refs for note timeouts
+  const noteTimeoutsRef = useRef({});
 
   // State for theme
   const [currentTheme, setCurrentTheme] = useState(
@@ -151,6 +178,38 @@ const Piano = ({
     [deactivateNote, stopNote, isSustainActive, onNoteOff]
   );
 
+  // Handle audio starter button click
+  const handleStartAudio = async () => {
+    const success = await startAudio();
+    if (success) {
+      setAudioStarted(true);
+    }
+    return success;
+  };
+
+  /**
+   * Plays multiple notes programmatically
+   * @param {Array} midiNotes - Array of MIDI note numbers to play
+   * @param {number} duration - Duration in milliseconds to hold the notes (default: 500ms)
+   * @param {number} velocity - Velocity of the note (0-1, default: 0.7)
+   */
+  const playNotes = useCallback(
+    createPlayNotesFunction({
+      startAudio: handleStartAudio,
+      handleNoteOn,
+      handleNoteOff,
+      audioStarted,
+      noteTimeoutsRef,
+    }),
+    [handleNoteOn, handleNoteOff, audioStarted, handleStartAudio]
+  );
+
+  // Expose the playNotes method to parent components via ref
+  useImperativeHandle(ref, () => ({
+    playNotes,
+    // Add any other methods you want to expose
+  }), [playNotes]);
+
   // Setup keyboard input if enabled
   useKeyboardInput({
     onNoteOn: enableKeyboard ? handleNoteOn : null,
@@ -159,17 +218,14 @@ const Piano = ({
     onSustainChange: setSustain,
   });
 
-  // Handle audio starter button click
-  const handleStartAudio = async () => {
-    const success = await startAudio();
-    if (success) {
-      setAudioStarted(true);
-    }
-  };
-
   // Toggle sustain pedal
   const toggleSustain = () => {
     setSustain(!isSustainActive);
+  };
+
+  // Toggle settings panel
+  const toggleSettingsPanel = () => {
+    setShowSettingsPanel(prev => !prev);
   };
 
   // Handler for MIDI messages
@@ -245,18 +301,6 @@ const Piano = ({
   // Handle theme change
   const handleThemeChange = useCallback(
     (newTheme, themeId) => {
-      console.log('Theme changed to:', themeId);
-      if (newTheme && newTheme.colors) {
-        console.log('Theme colors:', {
-          whiteKey: newTheme.colors.whiteKey,
-          blackKey: newTheme.colors.blackKey,
-          activeWhiteKey: newTheme.colors.activeWhiteKey,
-          activeBlackKey: newTheme.colors.activeBlackKey,
-        });
-      } else {
-        console.warn('Invalid theme object received:', newTheme);
-      }
-
       setCurrentTheme(newTheme);
 
       // Call external handler if provided
@@ -276,88 +320,131 @@ const Piano = ({
           </ControlsContainer>
         ) : (
           <>
+            {/* Mini status bar - always visible */}
             {showControls && (
-              <ControlsContainer>
-                <ControlGroup>
-                  <ControlLabel>Volume</ControlLabel>
-                  <VolumeSlider
-                    min="-40"
-                    max="0"
-                    step="1"
-                    value={volume}
-                    onChange={e => changeVolume(parseFloat(e.target.value))}
-                  />
-                </ControlGroup>
+              <MiniStatusDisplay>
+                {isSustainActive && <span>Sustain: On</span>}
+                {midiStatus.connected && <span>MIDI: {midiStatus.deviceName || 'Connected'}</span>}
+                <SettingsButton onClick={toggleSettingsPanel}>
+                  {showSettingsPanel ? 'Hide Settings' : 'Settings'}
+                </SettingsButton>
+              </MiniStatusDisplay>
+            )}
 
-                <ControlGroup>
-                  <ControlLabel>Sustain</ControlLabel>
-                  <SustainPedal $active={isSustainActive} onClick={toggleSustain}>
-                    {isSustainActive ? 'On' : 'Off'}
-                  </SustainPedal>
-                </ControlGroup>
+            {/* Collapsible settings panel */}
+            {showControls && showSettingsPanel && (
+              <CompactControlsPanel>
+                {/* Piano Sound Section */}
+                <SettingsSection>
+                  <SectionTitle>Sound Controls</SectionTitle>
+                  <ControlRow>
+                    <ControlGroup>
+                      <ControlLabel>Volume</ControlLabel>
+                      <VolumeSlider
+                        min="-40"
+                        max="0"
+                        step="1"
+                        value={volume}
+                        onChange={e => changeVolume(parseFloat(e.target.value))}
+                      />
+                    </ControlGroup>
 
-                {/* Keyboard Size Selector */}
-                {showKeyboardSizeSelector && (
-                  <ControlGroup>
-                    <KeyboardSizeSelector
-                      selectedLayout={keyboardLayoutId}
-                      onChange={handleKeyboardSizeChange}
-                      displayMode="dropdown"
-                      showInfo={false}
+                    <ControlGroup>
+                      <ControlLabel>Sustain</ControlLabel>
+                      <SustainPedal $active={isSustainActive} onClick={toggleSustain}>
+                        {isSustainActive ? 'On' : 'Off'}
+                      </SustainPedal>
+                    </ControlGroup>
+                  </ControlRow>
+                </SettingsSection>
+
+                {/* Appearance Section */}
+                <SettingsSection>
+                  <SectionTitle>Appearance</SectionTitle>
+                  <ControlRow>
+                    {/* Keyboard Size Selector */}
+                    {showKeyboardSizeSelector && (
+                      <ControlGroup>
+                        <KeyboardSizeSelector
+                          selectedLayout={keyboardLayoutId}
+                          onChange={handleKeyboardSizeChange}
+                          displayMode="dropdown"
+                          showInfo={false}
+                        />
+                      </ControlGroup>
+                    )}
+
+                    {/* Theme Selector */}
+                    <ControlGroup>
+                      <ThemeSelector
+                        onThemeChange={handleThemeChange}
+                        initialTheme={initialTheme}
+                        displayMode="dropdown"
+                      />
+                    </ControlGroup>
+                  </ControlRow>
+                </SettingsSection>
+
+                {/* MIDI Section */}
+                {enableMidi && (
+                  <SettingsSection>
+                    <SectionTitle>MIDI Settings</SectionTitle>
+                    <CustomMidiManager
+                      onMidiMessage={handleMidiMessage}
+                      onConnectionChange={handleMidiConnectionChange}
                     />
-                  </ControlGroup>
+                  </SettingsSection>
                 )}
 
-                {/* Theme Selector */}
-                <ControlGroup>
-                  <ThemeSelector
-                    onThemeChange={handleThemeChange}
-                    initialTheme={initialTheme}
-                    displayMode="dropdown"
-                  />
-                </ControlGroup>
+                {/* Advanced Settings Section */}
+                <SettingsSection $noBorder>
+                  <AdvancedControlsToggle
+                    onClick={() => setShowAdvancedControls(!showAdvancedControls)}
+                  >
+                    {showAdvancedControls ? 'Hide Advanced Options' : 'Show Advanced Options'}
+                  </AdvancedControlsToggle>
 
-                <AdvancedControlsToggle
-                  onClick={() => setShowAdvancedControls(!showAdvancedControls)}
-                >
-                  {showAdvancedControls ? 'Hide Advanced Options' : 'Show Advanced Options'}
-                </AdvancedControlsToggle>
-              </ControlsContainer>
-            )}
+                  {showAdvancedControls && (
+                    <AdvancedControlsContent>
+                      {/* Advanced Keyboard Size Options */}
+                      {showKeyboardSizeSelector && (
+                        <div>
+                          <SectionTitle>Advanced Keyboard Layouts</SectionTitle>
+                          <KeyboardSizeSelector
+                            selectedLayout={keyboardLayoutId}
+                            onChange={handleKeyboardSizeChange}
+                            displayMode="buttons"
+                            showInfo={true}
+                          />
+                        </div>
+                      )}
 
-            {showControls && showAdvancedControls && (
-              <AdvancedControlsContainer $expanded={showAdvancedControls}>
-                <AdvancedControlsContent>
-                  {showKeyboardSizeSelector && (
-                    <KeyboardSizeSelector
-                      selectedLayout={keyboardLayoutId}
-                      onChange={handleKeyboardSizeChange}
-                      displayMode="buttons"
-                      showInfo={true}
-                    />
+                      {/* Advanced Theme Options */}
+                      <div>
+                        <SectionTitle>Theme Gallery</SectionTitle>
+                        <ThemeSelector
+                          onThemeChange={handleThemeChange}
+                          initialTheme={initialTheme}
+                          displayMode="grid"
+                        />
+                      </div>
+                    </AdvancedControlsContent>
                   )}
+                </SettingsSection>
 
-                  {/* Theme selector grid in advanced controls */}
-                  <ThemeSelector
-                    onThemeChange={handleThemeChange}
-                    initialTheme={initialTheme}
-                    displayMode="grid"
-                  />
-                </AdvancedControlsContent>
-              </AdvancedControlsContainer>
-            )}
-
-            {/* MIDI Manager Section */}
-            {enableMidi && (
-              <MidiSection>
-                <MidiManager
-                  onMidiMessage={handleMidiMessage}
-                  onConnectionChange={handleMidiConnectionChange}
-                  compact={true}
-                  autoConnect={false}
-                  initialExpanded={true}
-                />
-              </MidiSection>
+                {/* Instructions */}
+                {showInstructions && (
+                  <SettingsSection>
+                    <SectionTitle>Instructions</SectionTitle>
+                    <InstructionsText>
+                      {enableKeyboard &&
+                        'Use your computer keyboard to play. A-L keys for white notes, W-P keys for black notes. Press SPACE to toggle sustain pedal.'}
+                      {enableMidi && enableKeyboard && <br />}
+                      {enableMidi && 'Connect a MIDI device using the MIDI Device controls above.'}
+                    </InstructionsText>
+                  </SettingsSection>
+                )}
+              </CompactControlsPanel>
             )}
 
             <Keyboard
@@ -369,25 +456,16 @@ const Piano = ({
               showKeyboardShortcuts={enableKeyboard}
               keyboardMapping={defaultKeyboardMapping}
               sustainEnabled={isSustainActive}
-              customTheme={currentTheme} // Pass the current theme here
+              customTheme={currentTheme}
               width={width}
               height={height}
             />
-
-            {showInstructions && (
-              <InstructionsText>
-                {enableKeyboard &&
-                  'Use your computer keyboard to play. A-L keys for white notes, W-P keys for black notes. Press SPACE to toggle sustain pedal.'}
-                {enableMidi && enableKeyboard && <br />}
-                {enableMidi && 'Connect a MIDI device using the MIDI Device controls above.'}
-              </InstructionsText>
-            )}
           </>
         )}
       </PianoContainer>
     </ThemeProvider>
   );
-};
+});
 
 Piano.propTypes = {
   /** Range of keys to display */

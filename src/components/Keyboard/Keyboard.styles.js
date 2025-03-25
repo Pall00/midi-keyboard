@@ -11,7 +11,7 @@ export const KeyboardContainer = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #222;
-  padding: 10px 0 0;
+  padding: 4px 0 0;
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -19,7 +19,7 @@ export const KeyboardContainer = styled.div`
   scrollbar-color: #666 #222;
 
   &::-webkit-scrollbar {
-    height: 8px;
+    height: 6px;
   }
 
   &::-webkit-scrollbar-track {
@@ -42,8 +42,7 @@ export const KeyboardWrapper = styled.div`
   display: flex;
   margin: 0 auto;
   min-width: min-content;
-  /* Adding some padding at the bottom to ensure there's space for labels */
-  padding-bottom: 16px;
+  padding-bottom: 8px;
 `;
 
 /**
@@ -53,8 +52,7 @@ export const KeyboardWrapper = styled.div`
 export const KeysContainer = styled.div`
   position: relative;
   width: 100%;
-  /* Default height that can be overridden via inline style */
-  min-height: 175px;
+  min-height: 160px;
 `;
 
 /**
@@ -63,12 +61,13 @@ export const KeysContainer = styled.div`
  */
 export const OctaveMarker = styled.div`
   position: absolute;
-  bottom: 2px;
+  bottom: 0px;
   left: ${props => props.$position}px;
   transform: translateX(-50%);
-  font-size: 12px;
+  font-size: 10px;
   color: #aaa;
   font-family: ${props => props.theme.typography.fontFamily};
+  opacity: 0.7;
 `;
 
 /**
@@ -78,8 +77,8 @@ export const OctaveMarker = styled.div`
 export const KeyboardControlsContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  padding: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.25rem;
   background-color: #2a2a2a;
   border-bottom: 1px solid #333;
 `;
@@ -112,7 +111,7 @@ export const ControlButton = styled.button`
  */
 export const KeyboardInstructions = styled.div`
   text-align: center;
-  padding: 0.5rem;
+  padding: 0.25rem;
   font-size: 0.8rem;
   color: #aaa;
   background-color: #2a2a2a;

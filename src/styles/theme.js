@@ -25,17 +25,17 @@ export const defaultTheme = {
   },
 
   dimensions: {
-    whiteKeyWidth: 36,
+    whiteKeyWidth: 32,
     blackKeyWidthRatio: 0.6, // Ratio of white key width
-    whiteKeyHeight: 150,
-    blackKeyHeight: 90,
-    borderRadius: 4,
+    whiteKeyHeight: 130,
+    blackKeyHeight: 80,
+    borderRadius: 3,
   },
 
   typography: {
-    noteLabelSize: '11px',
-    octaveLabelSize: '9px',
-    keyboardShortcutSize: '9px',
+    noteLabelSize: '10px',
+    octaveLabelSize: '8px',
+    keyboardShortcutSize: '8px',
     fontFamily:
       'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
   },

@@ -9,6 +9,8 @@ export const SelectorContainer = styled.div`
   background-color: #222;
   border-radius: 8px;
   margin-bottom: 1.5rem;
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
 /**
@@ -19,6 +21,8 @@ export const Title = styled.h3`
   font-size: 1.2rem;
   margin: 0 0 1rem 0;
   font-weight: 600;
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
 /**
@@ -28,7 +32,7 @@ export const ThemeGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
-
+  
   @media (max-width: 640px) {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
@@ -38,19 +42,21 @@ export const ThemeGrid = styled.div`
  * Individual theme card
  */
 export const ThemeCard = styled.div`
-  background-color: ${props => (props.$isSelected ? '#333' : '#2A2A2A')};
+  background-color: ${props => props.$isSelected ? '#333' : '#2A2A2A'};
   border-radius: 6px;
   padding: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
-  border: 2px solid ${props => (props.$isSelected ? '#4568dc' : 'transparent')};
-
+  border: 2px solid ${props => props.$isSelected ? '#4568dc' : 'transparent'};
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
+  
   &:hover {
     background-color: #333;
     transform: translateY(-2px);
   }
-
+  
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(69, 104, 220, 0.5);
@@ -65,6 +71,8 @@ export const ThemeName = styled.h4`
   font-size: 1rem;
   margin: 0.75rem 0 0.25rem;
   font-weight: 500;
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
 /**
@@ -75,6 +83,8 @@ export const ThemeDescription = styled.p`
   font-size: 0.8rem;
   margin: 0;
   line-height: 1.4;
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
 `;
 
 /**
@@ -98,10 +108,11 @@ export const ThemePreview = styled.div`
 export const WhiteKey = styled.div`
   width: 25px;
   height: 50px;
-  background-color: ${props =>
-    props.$isActive
+  background-color: ${props => 
+    props.$isActive 
       ? props.$theme?.colors?.activeWhiteKey || '#E0E8FF'
-      : props.$theme?.colors?.whiteKey || '#FFF'};
+      : props.$theme?.colors?.whiteKey || '#FFF'
+  };
   border: 1px solid ${props => props.$theme?.colors?.keyBorder || '#DDD'};
   border-radius: 0 0 2px 2px;
   margin: 0 1px;
@@ -115,10 +126,11 @@ export const WhiteKey = styled.div`
 export const BlackKey = styled.div`
   width: 16px;
   height: 35px;
-  background-color: ${props =>
-    props.$isActive
+  background-color: ${props => 
+    props.$isActive 
       ? props.$theme?.colors?.activeBlackKey || '#555'
-      : props.$theme?.colors?.blackKey || '#333'};
+      : props.$theme?.colors?.blackKey || '#333'
+  };
   border: 1px solid ${props => props.$theme?.colors?.blackKeyBorder || '#222'};
   border-radius: 0 0 2px 2px;
   margin: 0 -8px;
@@ -137,7 +149,7 @@ export const SelectedIndicator = styled.div`
   height: 12px;
   border-radius: 50%;
   background-color: #4568dc;
-
+  
   &::after {
     content: '';
     position: absolute;
@@ -159,7 +171,9 @@ export const DropdownContainer = styled.div`
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
+  
   label {
     color: #ddd;
     font-size: 0.875rem;
@@ -177,7 +191,9 @@ export const ThemeDropdown = styled.select`
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
   cursor: pointer;
-
+  font-family: ${props => props.theme.typography?.fontFamily ||
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'};
+  
   &:focus {
     outline: none;
     border-color: #4568dc;
