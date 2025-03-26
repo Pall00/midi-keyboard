@@ -1,4 +1,5 @@
 // src/utils/midiUtils.js
+// Consolidated utility functions for MIDI note conversion and parsing
 
 /**
  * Mapping of MIDI note numbers to note names with sharps
@@ -105,6 +106,21 @@ export const getMidiNoteName = midiNumber => {
 };
 
 /**
+ * Converts a MIDI note number to a note name (e.g., "C4")
+ * @param {string|number} midiNote - MIDI note number
+ * @returns {string} Note name in the format "C4"
+ */
+export const midiNoteToNoteName = (midiNote) => {
+  const noteNumber = parseInt(midiNote, 10);
+  if (isNaN(noteNumber)) {
+    console.error('Invalid MIDI note number:', midiNote);
+    return null;
+  }
+  
+  return getMidiNoteName(noteNumber);
+};
+
+/**
  * Convert note name to MIDI note number
  * @param {string} noteName - Note name with octave (e.g., "C4")
  * @returns {number|null} MIDI note number, or null if not found
@@ -113,6 +129,26 @@ export const getMidiNoteNumber = noteName => {
   const entries = Object.entries(midiNoteNumberToName);
   const found = entries.find(([_, name]) => name === noteName);
   return found ? parseInt(found[0]) : null;
+};
+
+/**
+ * Parse a note string into its components
+ * @param {string} note - The note string (e.g., "C#4")
+ * @returns {Object} Object with note name, whether it's sharp, and octave
+ */
+export const parseNote = note => {
+  const match = note.match(/^([A-G])([#]?)(\d+)$/);
+  if (!match) {
+    console.error(`Invalid note format: ${note}`);
+    return null;
+  }
+
+  return {
+    noteName: match[1],
+    isSharp: match[2] === '#',
+    octave: parseInt(match[3], 10),
+    fullName: match[1] + (match[2] || ''), // C or C#
+  };
 };
 
 /**

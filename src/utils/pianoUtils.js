@@ -1,24 +1,5 @@
 // src/utils/pianoUtils.js
-
-/**
- * Parse a note string into its components
- * @param {string} note - The note string (e.g., "C#4")
- * @returns {Object} Object with note name, whether it's sharp, and octave
- */
-export const parseNote = note => {
-  const match = note.match(/^([A-G])([#]?)(\d+)$/);
-  if (!match) {
-    console.error(`Invalid note format: ${note}`);
-    return null;
-  }
-
-  return {
-    noteName: match[1],
-    isSharp: match[2] === '#',
-    octave: parseInt(match[3], 10),
-    fullName: match[1] + (match[2] || ''), // C or C#
-  };
-};
+import { parseNote } from './midiUtils';
 
 /**
  * Create a full piano keyboard layout
@@ -99,3 +80,6 @@ export const NOTE_POSITIONS = {
 export const WHITE_KEYS_PER_OCTAVE = Object.values(NOTE_POSITIONS).filter(
   pos => pos.type === 'white'
 ).length;
+
+// Export parseNote for backward compatibility
+export { parseNote };

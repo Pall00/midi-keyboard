@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "framer-motion": "^10.0.0",
+    "lodash.merge": "^4.6.2",
     "prop-types": "^15.8.1",
     "styled-components": ">=5.0.0",
     "tone": "^14.7.77",

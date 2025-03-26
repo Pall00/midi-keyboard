@@ -1,22 +1,7 @@
 /**
- * Converts a MIDI note number to a note name (e.g., "C4")
- * @param {string|number} midiNote - MIDI note number
- * @returns {string} Note name in the format "C4"
+ * Import the note conversion function from midiUtils
  */
-export const midiNoteToNoteName = (midiNote) => {
-  const noteNumber = parseInt(midiNote, 10);
-  if (isNaN(noteNumber)) {
-    console.error('Invalid MIDI note number:', midiNote);
-    return null;
-  }
-  
-  const octave = Math.floor(noteNumber / 12) - 1;
-  const noteIndex = noteNumber % 12;
-  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-  const noteName = noteNames[noteIndex] + octave;
-  
-  return noteName;
-};
+import { midiNoteToNoteName } from './midiUtils';
 
 /**
  * Creates a function to play multiple notes programmatically
@@ -82,3 +67,6 @@ export const createPlayNotesFunction = ({
     }
   };
 }; 
+
+// Export the midiNoteToNoteName function for backward compatibility
+export { midiNoteToNoteName };

@@ -86,3 +86,26 @@ export {
   pianoThemes,
   getThemeById,
 } from './themes';
+
+// New Music Recognition Utilities
+export {
+  notesMatch,
+  noteInExpectedSet,
+  recognizeChord,
+  createNoteMatchingListener,
+  createTimingAnalyzer
+} from './utils/NoteRecognitionModule';
+
+// New MusicXML Utilities
+export {
+  musicXmlToNoteName,
+  musicXmlToMidiNote,
+  extractNotesFromMusicXML,
+  extractMeasuresFromMusicXML,
+  convertXmlTimingToMs,
+  compareMidiWithExpected,
+  createSimpleMusicXML
+} from './utils/MusicXMLUtils';
+
+// MIDI Recorder Utility
+export { createMidiRecorder } from './utils/MidiRecorder';

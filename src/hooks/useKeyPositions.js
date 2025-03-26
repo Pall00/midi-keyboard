@@ -1,7 +1,7 @@
 // src/hooks/useKeyPositions.js
 import { useMemo } from 'react';
 
-import { parseNote } from '../utils/pianoUtils';
+import { parseNote } from '../utils/midiUtils';
 
 /**
  * Custom hook to calculate positions for all piano keys
