@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import { ThemeProvider } from 'styled-components';
 
 import Keyboard from '../Keyboard';
-import MidiPanel from '../MidiPanel'; // Updated import
-import KeyboardSizeSelector from '../KeyboardSizeSelector';
+import PianoSettings from '../PianoSettings'; // Import the new consolidated component
 import { defaultTheme } from '../../styles/theme';
 import { defaultKeyboardMapping } from '../../utils/keyboardMapping';
 import {
@@ -22,37 +21,10 @@ import { CONNECTION_STATUS } from '../../hooks/useMidiConnectionManager';
 import {
   PianoContainer,
   ControlsContainer,
-  ControlGroup,
-  ControlLabel,
   ControlButton,
-  SustainPedal,
-  VolumeSlider,
-  InstructionsText,
-  MidiSection,
-  AdvancedControlsToggle,
-  AdvancedControlsContent,
-  SettingsButton,
-  CompactControlsPanel,
   MiniStatusDisplay,
-  SettingsSection,
-  SectionTitle,
-  ControlRow,
+  SettingsButton,
 } from './Piano.styles';
-
-// Custom MidiPanel wrapper with specific styling
-const CustomMidiPanel = ({ onMidiMessage, onConnectionChange }) => {
-  return (
-    <MidiSection>
-      <MidiPanel
-        onMidiMessage={onMidiMessage}
-        onConnectionChange={onConnectionChange}
-        compact={true}
-        autoConnect={false}
-        initialExpanded={true}
-      />
-    </MidiSection>
-  );
-};
 
 /**
  * Piano Component
@@ -103,9 +75,6 @@ const Piano = forwardRef(({
       endNote: layout.endNote,
     };
   });
-
-  // State for advanced controls visibility
-  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
 
   // Track MIDI connection status
   const [midiStatus, setMidiStatus] = useState({
@@ -299,100 +268,21 @@ const Piano = forwardRef(({
               </MiniStatusDisplay>
             )}
 
-            {/* Collapsible settings panel */}
+            {/* Consolidated settings panel */}
             {showControls && showSettingsPanel && (
-              <CompactControlsPanel>
-                {/* Piano Sound Section */}
-                <SettingsSection>
-                  <SectionTitle>Sound Controls</SectionTitle>
-                  <ControlRow>
-                    <ControlGroup>
-                      <ControlLabel>Volume</ControlLabel>
-                      <VolumeSlider
-                        min="-40"
-                        max="0"
-                        step="1"
-                        value={volume}
-                        onChange={e => changeVolume(parseFloat(e.target.value))}
-                      />
-                    </ControlGroup>
-
-                    <ControlGroup>
-                      <ControlLabel>Sustain</ControlLabel>
-                      <SustainPedal $active={isSustainActive} onClick={toggleSustain}>
-                        {isSustainActive ? 'On' : 'Off'}
-                      </SustainPedal>
-                    </ControlGroup>
-                  </ControlRow>
-                </SettingsSection>
-
-                {/* Keyboard Layout Section */}
-                {showKeyboardSizeSelector && (
-                  <SettingsSection>
-                    <SectionTitle>Keyboard Layout</SectionTitle>
-                    <ControlRow>
-                      <ControlGroup>
-                        <KeyboardSizeSelector
-                          selectedLayout={keyboardLayoutId}
-                          onChange={handleKeyboardSizeChange}
-                          displayMode="dropdown"
-                          showInfo={true}
-                        />
-                      </ControlGroup>
-                    </ControlRow>
-                  </SettingsSection>
-                )}
-
-                {/* MIDI Section */}
-                {enableMidi && (
-                  <SettingsSection>
-                    <SectionTitle>MIDI Settings</SectionTitle>
-                    <CustomMidiPanel
-                      onMidiMessage={handleMidiMessage}
-                      onConnectionChange={handleMidiConnectionChange}
-                    />
-                  </SettingsSection>
-                )}
-
-                {/* Advanced Settings Section */}
-                {showKeyboardSizeSelector && (
-                  <SettingsSection $noBorder>
-                    <AdvancedControlsToggle
-                      onClick={() => setShowAdvancedControls(!showAdvancedControls)}
-                    >
-                      {showAdvancedControls ? 'Hide Advanced Options' : 'Show Advanced Options'}
-                    </AdvancedControlsToggle>
-
-                    {showAdvancedControls && (
-                      <AdvancedControlsContent>
-                        {/* Advanced Keyboard Size Options */}
-                        <div>
-                          <SectionTitle>Advanced Keyboard Layouts</SectionTitle>
-                          <KeyboardSizeSelector
-                            selectedLayout={keyboardLayoutId}
-                            onChange={handleKeyboardSizeChange}
-                            displayMode="buttons"
-                            showInfo={true}
-                          />
-                        </div>
-                      </AdvancedControlsContent>
-                    )}
-                  </SettingsSection>
-                )}
-
-                {/* Instructions */}
-                {showInstructions && (
-                  <SettingsSection>
-                    <SectionTitle>Instructions</SectionTitle>
-                    <InstructionsText>
-                      {enableKeyboard &&
-                        'Use your computer keyboard to play. A-L keys for white notes, W-P keys for black notes. Press SPACE to toggle sustain pedal.'}
-                      {enableMidi && enableKeyboard && <br />}
-                      {enableMidi && 'Connect a MIDI device using the MIDI Device controls above.'}
-                    </InstructionsText>
-                  </SettingsSection>
-                )}
-              </CompactControlsPanel>
+              <PianoSettings
+                volume={volume}
+                onVolumeChange={changeVolume}
+                isSustainActive={isSustainActive}
+                onSustainToggle={toggleSustain}
+                keyboardLayoutId={keyboardLayoutId}
+                onKeyboardSizeChange={handleKeyboardSizeChange}
+                showKeyboardSizeSelector={showKeyboardSizeSelector}
+                enableMidi={enableMidi}
+                onMidiMessage={handleMidiMessage}
+                onMidiConnectionChange={handleMidiConnectionChange}
+                showInstructions={showInstructions}
+              />
             )}
 
             <Keyboard
