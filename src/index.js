@@ -7,10 +7,7 @@ export { default as Key } from './components/Key';
 export { default as KeyboardControls } from './components/KeyboardControls';
 export { default as KeyboardSizeSelector } from './components/KeyboardSizeSelector';
 
-// New Theme Components
-export { default as ThemeSelector } from './components/ThemeSelector';
-
-// New MIDI Components
+// MIDI Components
 export { default as MidiManager } from './components/MidiManager';
 export { default as MidiDeviceSelector } from './components/MidiDeviceSelector';
 export { default as MidiConnectionStatus } from './components/MidiConnectionStatus';
@@ -71,23 +68,11 @@ export {
   clearMidiStorage,
 } from './utils/midiStorageManager';
 
-// Styles
-export { defaultTheme, createTheme } from './styles/theme';
+// Basic styles - only export the default theme and global styles
+export { default as defaultTheme } from './styles/theme';
 export { default as GlobalStyles } from './styles/GlobalStyles';
 
-// New Theme Exports
-export {
-  ClassicGrandTheme,
-  NeonSynthwaveTheme,
-  MinimalistMonochromeTheme,
-  VintageElectricTheme,
-  ChildFriendlyTheme,
-  NatureInspiredTheme,
-  pianoThemes,
-  getThemeById,
-} from './themes';
-
-// New Music Recognition Utilities
+// Music Recognition Utilities
 export {
   notesMatch,
   noteInExpectedSet,
@@ -96,7 +81,7 @@ export {
   createTimingAnalyzer
 } from './utils/NoteRecognitionModule';
 
-// New MusicXML Utilities
+// MusicXML Utilities
 export {
   musicXmlToNoteName,
   musicXmlToMidiNote,

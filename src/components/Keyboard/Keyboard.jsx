@@ -28,22 +28,16 @@ const Keyboard = ({
   showKeyboardShortcuts,
   keyboardMapping,
   sustainEnabled,
-  customTheme,
   width,
   height,
 }) => {
-  // Apply custom theme if provided
-  const theme = customTheme ? customTheme : defaultTheme;
+  // Apply the default theme
+  const theme = defaultTheme;
 
   // Debug: Log theme colors
   useEffect(() => {
-    console.log('Keyboard using theme:', {
-      whiteKey: theme.colors.whiteKey,
-      blackKey: theme.colors.blackKey,
-      activeWhiteKey: theme.colors.activeWhiteKey,
-      activeBlackKey: theme.colors.activeBlackKey,
-    });
-  }, [theme]);
+    console.log('Keyboard using default theme');
+  }, []);
 
   // Use piano notes hook to process the key range
   // Ensure keyRange has default values in case it's undefined
@@ -154,8 +148,6 @@ Keyboard.propTypes = {
   keyboardMapping: PropTypes.object,
   /** Whether sustain is enabled (notes don't stop when released) */
   sustainEnabled: PropTypes.bool,
-  /** Custom theme overrides */
-  customTheme: PropTypes.object,
   /** Explicit width for the keyboard */
   width: PropTypes.number,
   /** Explicit height for the keyboard */
@@ -169,7 +161,6 @@ Keyboard.defaultProps = {
   showKeyboardShortcuts: true,
   keyboardMapping: defaultKeyboardMapping || {},
   sustainEnabled: false,
-  customTheme: null,
   width: null,
   height: null,
 };

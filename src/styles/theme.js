@@ -1,9 +1,8 @@
 // src/styles/theme.js
 /**
- * Default theme for the piano keyboard
+ * Fixed theme for the piano keyboard
  * Contains colors, dimensions, and animation settings
  */
-
 export const defaultTheme = {
   colors: {
     // Key colors
@@ -51,49 +50,6 @@ export const defaultTheme = {
     medium: '768px',
     large: '992px',
   },
-};
-
-/**
- * Creates a custom theme by deeply merging user options with the default theme
- * @param {Object} options - Custom theme options
- * @returns {Object} - Merged theme
- */
-export const createTheme = (options = {}) => {
-  // Helper for deep merge
-  const deepMerge = (target, source) => {
-    const output = { ...target };
-
-    // For each property in source
-    Object.keys(source).forEach(key => {
-      // If the property is an object and exists in both
-      if (
-        typeof source[key] === 'object' &&
-        source[key] !== null &&
-        target[key] &&
-        typeof target[key] === 'object' &&
-        target[key] !== null
-      ) {
-        // Recursively merge objects
-        output[key] = deepMerge(target[key], source[key]);
-      } else {
-        // Otherwise just copy the source value
-        output[key] = source[key];
-      }
-    });
-
-    return output;
-  };
-
-  // Debug: log what we're merging
-  console.log('Creating theme, custom options:', options);
-
-  // Deep merge with default theme
-  const merged = deepMerge(defaultTheme, options);
-
-  // Debug: log result
-  console.log('Merged theme result:', merged);
-
-  return merged;
 };
 
 export default defaultTheme;

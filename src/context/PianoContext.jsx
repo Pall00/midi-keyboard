@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import useAudioEngine from '../hooks/useAudioEngine';
 import usePianoNotes from '../hooks/usePianoNotes';
 import useMidiConnectionManager from '../hooks/useMidiConnectionManager';
-import { defaultTheme, createTheme } from '../styles/theme';
+import { defaultTheme } from '../styles/theme';
 import { midiNoteToNoteName, createPlayNotesFunction } from '../utils/midiNotePlayer';
 
 // Create context
@@ -29,7 +29,7 @@ export const usePianoContext = () => {
  * Centralizes piano state management by combining multiple hooks
  * and providing their values and methods through context.
  */
-export const PianoProvider = ({ children, initialSettings = {}, customTheme = null }) => {
+export const PianoProvider = ({ children, initialSettings = {} }) => {
   // Track whether audio context has been started
   const [audioStarted, setAudioStarted] = useState(false);
 
@@ -44,8 +44,8 @@ export const PianoProvider = ({ children, initialSettings = {}, customTheme = nu
     ...initialSettings,
   });
 
-  // Initialize theme
-  const theme = customTheme ? createTheme(customTheme) : defaultTheme;
+  // Use fixed theme
+  const theme = defaultTheme;
 
   // Use piano notes hook for state management
   const pianoNotes = usePianoNotes();
@@ -196,7 +196,6 @@ export const PianoProvider = ({ children, initialSettings = {}, customTheme = nu
 PianoProvider.propTypes = {
   children: PropTypes.node.isRequired,
   initialSettings: PropTypes.object,
-  customTheme: PropTypes.object,
 };
 
 export default PianoContext;
