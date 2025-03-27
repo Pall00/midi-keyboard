@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { ThemeProvider } from 'styled-components';
 
 import Keyboard from '../Keyboard';
-import MidiManager from '../MidiManager';
+import MidiPanel from '../MidiPanel'; // Updated import
 import KeyboardSizeSelector from '../KeyboardSizeSelector';
 import { defaultTheme } from '../../styles/theme';
 import { defaultKeyboardMapping } from '../../utils/keyboardMapping';
@@ -39,11 +39,11 @@ import {
   ControlRow,
 } from './Piano.styles';
 
-// Custom MidiManager with custom styling
-const CustomMidiManager = ({ onMidiMessage, onConnectionChange }) => {
+// Custom MidiPanel wrapper with specific styling
+const CustomMidiPanel = ({ onMidiMessage, onConnectionChange }) => {
   return (
     <MidiSection>
-      <MidiManager
+      <MidiPanel
         onMidiMessage={onMidiMessage}
         onConnectionChange={onConnectionChange}
         compact={true}
@@ -347,7 +347,7 @@ const Piano = forwardRef(({
                 {enableMidi && (
                   <SettingsSection>
                     <SectionTitle>MIDI Settings</SectionTitle>
-                    <CustomMidiManager
+                    <CustomMidiPanel
                       onMidiMessage={handleMidiMessage}
                       onConnectionChange={handleMidiConnectionChange}
                     />

@@ -7,10 +7,11 @@ export { default as Key } from './components/Key';
 export { default as KeyboardControls } from './components/KeyboardControls';
 export { default as KeyboardSizeSelector } from './components/KeyboardSizeSelector';
 
-// MIDI Components
-export { default as MidiManager } from './components/MidiManager';
-export { default as MidiDeviceSelector } from './components/MidiDeviceSelector';
-export { default as MidiConnectionStatus } from './components/MidiConnectionStatus';
+// MIDI Components 
+// ---- UPDATED ----
+// Now exporting the new integrated MidiPanel instead of separate components
+export { default as MidiPanel } from './components/MidiPanel';
+
 
 // Context
 export { default as PianoContext, PianoProvider, usePianoContext } from './context/PianoContext';
